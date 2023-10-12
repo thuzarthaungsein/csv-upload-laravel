@@ -4,7 +4,7 @@
 -   Once uploaded, the system processes the files in the background.
 -   Users are then notified when the processing is complete.
 -   Application provides users with a history of all file uploads.
--   For now, system can upload only small file upload. If user upload large file, that file will stay with processing status.
+-   For now, system can upload only small file. If user upload large file, that file will be stayed with Processing status.
 -   Will enhance later.
 
 ## Requirements
