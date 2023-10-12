@@ -7,6 +7,13 @@
 -   For now, system can upload only small file. If user upload large file, that file will be stayed with Processing status.
 -   Will enhance later.
 
+-   upload small file.
+-   will show real time upload process with percentage.
+-   in background, will remove non-utf8 characters and save the file.
+-   will chunk the file entries into small Jobs.
+-   will insert or update unique entries
+-   will notify when the job complete.
+
 ## Requirements
 
 -   PHP 8.1
