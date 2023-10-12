@@ -12,10 +12,11 @@ return new class () extends Migration {
      */
     public function up()
     {
+        Schema::dropIfExists('progress');
         Schema::create('progress', function (Blueprint $table) {
             $table->id();
             $table->integer('percentage')->default(0);
-            $table->foreignId('csv_file_id')->constrained()->cascadeOnDelete()->on('csv_files');
+            $table->foreignId('csv_file_id');
             $table->timestamps();
         });
     }

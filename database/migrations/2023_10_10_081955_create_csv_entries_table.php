@@ -12,6 +12,7 @@ return new class () extends Migration {
      */
     public function up()
     {
+        Schema::dropIfExists('csv_entries');
         Schema::create('csv_entries', function (Blueprint $table) {
             $table->id();
             $table->string('unique_key');

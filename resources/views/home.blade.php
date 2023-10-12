@@ -38,7 +38,9 @@
                             @foreach ($data ?? [] as $key => $value)
                                 <tr>
                                     <td>
-                                        {{ $value->created_at->diffForHumans() }}
+                                        <span id="time{{ $value->id }}">
+                                            {{ $value->created_at->diffForHumans() }}
+                                        </span>
                                     </td>
                                     <td>
                                         {{ $value->original_name }}

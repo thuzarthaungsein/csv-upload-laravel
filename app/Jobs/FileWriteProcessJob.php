@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use League\Csv\CharsetConverter;
 use League\Csv\Reader;
 use League\Csv\Writer;
 
@@ -31,9 +32,9 @@ class FileWriteProcessJob implements ShouldQueue
      */
     public function __construct(
         private $fileContents,
-        private $cleanedPath = '',
         private CsvFile $newCsvFile,
         private Progress $progress,
+        private $cleanedPath = '',
         private bool $isLastJob = false
     ) {}
 
@@ -45,7 +46,13 @@ class FileWriteProcessJob implements ShouldQueue
     public function handle()
     {
         $content = $this->fileContents ?? [];
+        // $encoder = (new CharsetConverter())
+        //     ->inputEncoding('utf-8')
+        //     ->outputEncoding('utf-8')
+        // ;
         $writer = Writer::createFromPath(storage_path('app/' . $this->cleanedPath), 'a');
+        // $writer->addFormatter($encoder);
+        // $writer->insertAll($content);
 
         // clean non utf8 chars and write
         foreach ($content as $key => $row) {
@@ -58,7 +65,7 @@ class FileWriteProcessJob implements ShouldQueue
 
         if($this->isLastJob) {
             // chunk cleaned file to small job for inserting
-            ChunkFileJob::dispatch($this->cleanedPath, $this->newCsvFile, $this->progress);
+            ChunkFileJob::dispatch($this->newCsvFile, $this->progress, $this->cleanedPath);
         }
     }
 }

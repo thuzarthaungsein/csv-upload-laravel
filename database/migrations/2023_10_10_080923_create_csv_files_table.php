@@ -12,12 +12,14 @@ return new class () extends Migration {
      */
     public function up()
     {
+        Schema::dropIfExists('csv_files');
         Schema::create('csv_files', function (Blueprint $table) {
             $table->id();
             $table->string('unique_key');
             $table->string('original_name');
             $table->string('path');
             $table->integer('version')->default(1);
+            $table->foreignId('user_id');
             $table->timestamps();
         });
     }

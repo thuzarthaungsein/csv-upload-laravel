@@ -10,6 +10,7 @@ use App\Jobs\InsertProcessJob;
 use App\Models\CsvEntry;
 use App\Models\CsvFile;
 use App\Models\Progress;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use League\Csv\Reader;
@@ -51,6 +52,7 @@ class UploadCsvController extends Controller
         $newCsvFile->path = $path;
         $newCsvFile->original_name = $original;
         $newCsvFile->version = $version;
+        $newCsvFile->user_id = Auth::user()->id;
         $newCsvFile->save();
 
         // Create a record to track progress
@@ -64,19 +66,20 @@ class UploadCsvController extends Controller
 
         $writeChunkSize = 50;
         $writeChunks = [];
+
         foreach ($csv->getRecords() as $row) {
             $writeChunks[] = $row;
 
             if (count($writeChunks) === $writeChunkSize) {
                 // Dispatch a single job for this chunk
-                FileWriteProcessJob::dispatch($writeChunks, $cleanedPath, $newCsvFile, $progress);
+                FileWriteProcessJob::dispatch($writeChunks, $newCsvFile, $progress, $cleanedPath);
                 $writeChunks = [];
             }
         }
 
         // Dispatch any remaining data as a final job
         if (!empty($writeChunks)) {
-            FileWriteProcessJob::dispatch($writeChunks, $cleanedPath, $newCsvFile, $progress, true);
+            FileWriteProcessJob::dispatch($writeChunks, $newCsvFile, $progress, $cleanedPath, true);
         }
 
         $allFiles = CsvFile::with('progress')->orderBy('created_at', 'desc')->get();

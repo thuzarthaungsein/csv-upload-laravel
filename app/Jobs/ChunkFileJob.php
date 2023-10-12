@@ -25,9 +25,9 @@ class ChunkFileJob implements ShouldQueue
      * @return void
      */
     public function __construct(
-        private $cleanedPath = '',
         private CsvFile $newCsvFile,
         private Progress $progress,
+        private $cleanedPath = '',
     ) {}
 
     /**
@@ -82,7 +82,7 @@ class ChunkFileJob implements ShouldQueue
 
         // Dispatch any remaining data as a final job
         if (!empty($chunks)) {
-            InsertProcessJob::dispatch($chunks, $csvNew->count(), $this->progress, $this->newCsvFile, $headerFields)->onQueue('upload');
+            InsertProcessJob::dispatch($chunks, $csvNew->count(), $this->progress, $this->newCsvFile, $headerFields, true)->onQueue('upload');
         }
     }
 }

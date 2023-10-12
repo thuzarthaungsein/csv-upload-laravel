@@ -6,13 +6,16 @@ use App\Events\ListenUploadProgressEvent;
 use App\Models\CsvEntry;
 use App\Models\CsvFile;
 use App\Models\Progress;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use League\Csv\Reader;
 
 class InsertProcessJob implements ShouldQueue
@@ -33,7 +36,8 @@ class InsertProcessJob implements ShouldQueue
         private $totalRows,
         private Progress $progress,
         private CsvFile $new,
-        private $headers
+        private $headers,
+        private bool $isLastJob = false
     ) {}
 
     /**
@@ -99,5 +103,14 @@ class InsertProcessJob implements ShouldQueue
 
         // insert multi rows for new records
         CsvEntry::insert($newData);
+
+        // notified related user when process is complete
+        if($this->isLastJob) {
+            $user = User::where('id', $this->new->user_id)->first();
+            if($user !== null) {
+                // Mail::to($user->email ?? '')->send(new UploadFinishReminder());
+            }
+
+        }
     }
 }
